@@ -95,7 +95,7 @@ extern "C" NSString *NSTemporaryDirectory();
 #endif
 #endif
 
-#if defined(Q_OS_ANDROID)
+#if defined(Q_OS_ANDROID) || !QT_CONFIG(statx)
 // statx() is disabled on Android because quite a few systems
 // come with sandboxes that kill applications that make system calls outside a
 // whitelist and several Android vendors can't be bothered to update the list.
@@ -320,16 +320,19 @@ static int qt_real_statx(int fd, const char *pathname, int flags, struct statx *
 
 static int qt_statx(const char *pathname, struct statx *statxBuffer)
 {
+    return -ENOSYS;
     return qt_real_statx(AT_FDCWD, pathname, 0, statxBuffer);
 }
 
 static int qt_lstatx(const char *pathname, struct statx *statxBuffer)
 {
+    return -ENOSYS;
     return qt_real_statx(AT_FDCWD, pathname, AT_SYMLINK_NOFOLLOW, statxBuffer);
 }
 
 static int qt_fstatx(int fd, struct statx *statxBuffer)
 {
+    return -ENOSYS;
     return qt_real_statx(fd, "", AT_EMPTY_PATH, statxBuffer);
 }
 
